@@ -2,26 +2,28 @@ import Axios from 'axios';
 
 // axios.defaults.baseURL = '';
 
-const BASE_URL = 'https://pixabay.com/api/';
-const USERkEY = '?key=44446882-f589529ab68d1d31e6487214d';
+// const BASE_URL = 'https://pixabay.com/api/';
+// const USERkEY = '?key=44446882-f589529ab68d1d31e6487214d';
 
-const axios = Axios.create({
-  baseURL: 'https://pixabay.com/api/',
-  headers: {},
-  params: {
-    key: '44446882-f589529ab68d1d31e6487214d',
-  },
-});
-export async function getAllBooks(param, page = '1', pages = 15) {
-  const par = {
-    param: param,
-    page: page,
-    pages: pages,
-  };
-
+export async function getAllBooks(q, page = '1', pages = 15) {
+  // const par = {
+  //   q: q,
+  //   page: page,
+  //   per_page: pages,
+  // };
+  let axios = Axios.create({
+    baseURL: 'https://pixabay.com/api/',
+    headers: {},
+    params: {
+      key: '44446882-f589529ab68d1d31e6487214d',
+      q: q,
+      page: page,
+      per_page: pages,
+    },
+  });
   // const res = await axios.get('');
   try {
-    const res = await axios.get('', par);
+    const res = await axios.get('');
     return res.data;
   } catch (err) {
     console.log(err);

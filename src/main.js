@@ -27,7 +27,7 @@ refs.nextImg.addEventListener('click', nextImg);
 let gallery = new SimpleLightbox('.galery__list a');
 
 // ! Поиск Картинок в перший раз
-function seartchIMG(e) {
+async function seartchIMG(e) {
   e.preventDefault();
   nameIMG = e.target.name.value.trim();
 
@@ -41,8 +41,8 @@ function seartchIMG(e) {
   }
 
   showLoader();
-
-  getAllBooks(nameIMG).then(img => {
+  try {
+    const img = await getAllBooks(nameIMG);
     // || img.totalHits == total
     // !Якщо нічого не знайшло
     if (img.hits.length == 0) {
@@ -72,62 +72,70 @@ function seartchIMG(e) {
 
     gallery.refresh();
     loaderVision();
-  });
-  e.target.name.value = '';
+    e.target.name.value = '';
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 // ! Добавление картинок
-function nextImg() {
-  // !  Проверка можно ли добавлять картинки
-  if (totalHits <= refs.galery.childNodes.length + numberADDImg) {
-    iziToast.error({
-      title: 'Error',
-      message: 'УСЕ!',
-    });
-
-    const add = totalHits - refs.galery.childNodes.length;
-    // !Єто если уже совсем нельзя
-    if (add <= 0) {
+async function nextImg() {
+  try {
+    // !  Проверка можно ли добавлять картинки
+    if (totalHits <= refs.galery.childNodes.length + numberADDImg) {
       iziToast.error({
         title: 'Error',
-        message: 'STOP!',
+        message: 'УСЕ!',
       });
+
+      const add = totalHits - refs.galery.childNodes.length;
+      // !Єто если уже совсем нельзя
+      if (add <= 0) {
+        iziToast.error({
+          title: 'Error',
+          message: 'STOP!',
+        });
+
+        buttonNeedVisible();
+
+        return;
+      }
+
+      const name = await getAllBooks(nameIMG, pages++, add);
+      render(name.hits);
+      gallery.refresh();
+      scrollEl();
 
       buttonNeedVisible();
 
       return;
     }
 
-    getAllBooks(nameIMG, pages++, add).then(name => render(name.hits));
+    const name = await getAllBooks(nameIMG, pages++, numberADDImg);
+    render(name.hits);
     gallery.refresh();
-
-    // ! Обновление галереи
-    gallery.refresh();
-
-    buttonNeedVisible();
     scrollEl();
-    return;
+
+    // // ! Чомусь не скролить
+
+    // console.log('ЧоМУЖ не скролиить?');
+    // scrollEl();
+
+    // ! Це вже паніка...
+    // window.scrollBy({
+    //   top: 100,
+    //   left: 100,
+    //   behavior: 'smooth',
+    // });
+    // scrollBy(3000, 0);
+
+    //! обновление галереи
+    // gallery.refresh();
+    // scrollEl();
+    buttonNeedVisible();
+  } catch (err) {
+    console.log(err);
   }
-
-  getAllBooks(nameIMG, pages++, numberADDImg).then(name => render(name.hits));
-
-  // ! Чомусь не скролить
-
-  console.log('ЧоМУЖ не скролиить?');
-  scrollEl();
-
-  // ! Це вже паніка...
-  window.scrollBy({
-    top: 100,
-    left: 100,
-    behavior: 'smooth',
-  });
-  scrollBy(3000, 0);
-
-  //! обновление галереи
-  gallery.refresh();
-  scrollEl();
-  buttonNeedVisible();
 }
 
 // ! Ждун для загрузки картинок
@@ -164,13 +172,6 @@ function buttonNeedVisible() {
   } else refs.nextImg.classList.remove('hidden');
 }
 
-// ! Тест прокрутки через таймаут О_о
-setTimeout(() => {
-  console.log('Delayed for 1 second.');
-  scrollEl();
-  console.log('Прокрутка scrollEl() Через таймаут!');
-}, 15000);
-
 async function scrollEl() {
   if (!refs.galery.children[0]) {
     window.scrollBy({
@@ -180,8 +181,10 @@ async function scrollEl() {
     return;
   }
   let ppp = refs.galery.children[0];
+
+  //! dblft 480
   const cildHeight = ppp.getBoundingClientRect().height * 2;
-  console.log('СКРОЛ');
+
   window.scrollBy({
     top: cildHeight,
     behavior: 'smooth',
