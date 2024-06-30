@@ -34,6 +34,7 @@ async function seartchIMG(e) {
   // !якщо пустий рядок
   if (nameIMG === '') {
     clearCiild(refs.galery);
+    refs.nextImg.classList.add('hidden');
     iziToast.info({
       title: 'Пустой РЯДОК!!',
     });
