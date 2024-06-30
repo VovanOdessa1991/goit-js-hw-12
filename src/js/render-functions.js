@@ -1,13 +1,16 @@
-export function render(img, likes, vievs, comments, downloads) {
-  const list = `<li class="galery__item">
+import { refs } from './refs';
+export function render(img) {
+  const list = img
+    .map(
+      ({ webformatURL, views, comments, likes, downloads } = img) =>
+        `<li class="galery__item">
           <div class="galery__item-div">
-            <a href="${img}">
+            <a href="${webformatURL}">
               <img
                 class="galery-img"
-                src = "${img}"
+                src = "${webformatURL}"
                 alt=""
-                
-                
+
               />
             </a>
             <div class="galery__info">
@@ -20,7 +23,7 @@ export function render(img, likes, vievs, comments, downloads) {
                 </li>
                 <li class="galeri__info-item">
                   <p class="galeri__info-header">Views</p>
-                  <p class="galeri__ingo-footer">${vievs}</p>
+                  <p class="galeri__ingo-footer">${views}</p>
                 </li>
                 <li class="galeri__info-item">
                   <p class="galeri__info-header">Comments</p>
@@ -33,18 +36,24 @@ export function render(img, likes, vievs, comments, downloads) {
               </ul>
             </div>
           </div>
-        </li>`;
-  return list;
-}
-export function clearCiild(perents) {
-  // const myNode = document.getElementById(`${perents}`);
-  while (perents.firstChild) {
-    perents.removeChild(perents.lastChild);
-  }
+        </li>`
+    )
+    .join('');
+
+  refs.galery.insertAdjacentHTML('beforeend', list);
 }
 
-export function print(objeckt, img, likes, vievs, comments, downloads) {
-  const list = render(img, likes, vievs, comments, downloads);
-  objeckt.insertAdjacentHTML('afterbegin', list);
-  // refs.galery.i;
+export function clearCiild(perents) {
+  perents.innerHTML = '';
+
+  //!  Old methods
+
+  // const myNode = document.getElementById(`${perents}`);
+  // while (perents.firstChild) {
+  //   perents.removeChild(perents.lastChild);
+  // }
 }
+// Old method
+// export function print(objeckt, img, likes, vievs, comments, downloads) {
+//   const list = render(img, likes, vievs, comments, downloads);
+// }

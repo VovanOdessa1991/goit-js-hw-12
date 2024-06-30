@@ -155,7 +155,7 @@ button {
 .preLoader {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 94%;
   background: #000;
   z-index: 10;
 }

@@ -1,20 +1,59 @@
-//pixabay.com/api/
+import Axios from 'axios';
 
-// key=44446882-f589529ab68d1d31e6487214d;
-
-// ! ПРимер! Извлечение фотографий «желтых цветов». Поисковый запросддолжен быть закодирован в URL:
-
-// https://pixabay.com/api/?key=44446882-f589529ab68d1d31e6487214d&q=yellow+flowers&image_type=photo
+// axios.defaults.baseURL = '';
 
 const BASE_URL = 'https://pixabay.com/api/';
 const USERkEY = '?key=44446882-f589529ab68d1d31e6487214d';
 
-export function getAllBooks() {
-  //   const END_POINT = '/books';
-  const url = `${BASE_URL}${USERkEY}`;
+const axios = Axios.create({
+  baseURL: 'https://pixabay.com/api/',
+  headers: {},
+  params: {
+    key: '44446882-f589529ab68d1d31e6487214d',
+  },
+});
+export async function getAllBooks(param, page = '1', pages = 15) {
+  const par = {
+    param: param,
+    page: page,
+    pages: pages,
+  };
 
-  const params = '&image_type=photo&orientation=horizontal';
-  const headers = {};
+  // const res = await axios.get('');
+  try {
+    const res = await axios.get('', par);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+  }
 
-  return fetch(url).then(res => res.json());
+  // !Перевірка Аксіоса(про всяк випадок)
+  // .then(function (response) {
+  // console.log(response.data.hits);
+  // console.log(response.status);
+  // console.log(response.statusText);
+  // console.log(response.headers);
+  // console.log(response.config);
+  // })
+
+  // ! Старий метод (про всяк випадок)
+  // const END_POINT = `&q=${param}&min_width=2450`;
+  // const params = `&image_type=photo&orientation=horizontal&safesearch=true&per_page=${pages}&page=${page}`;
+
+  // const url = `${BASE_URL}${USERkEY}${END_POINT}${params}`;
+
+  // const headers = {};
+
+  // const promiseIMG = fetch(url);
+
+  // return promiseIMG
+  //   .then(data => data.json())
+
+  //   .catch(() => {
+  //     console.log('Error');
+  //   });
 }
+
+//  ПРимер! Извлечение фотографий «желтых цветов». Поисковый запросддолжен быть закодирован в URL:
+
+// https://pixabay.com/api/?key=44446882-f589529ab68d1d31e6487214d&q=yellow+flowers&image_type=photo
