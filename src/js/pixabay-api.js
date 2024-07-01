@@ -1,29 +1,30 @@
-import Axios from 'axios';
+import axios from 'axios';
 
 // axios.defaults.baseURL = '';
 
 // const BASE_URL = 'https://pixabay.com/api/';
 // const USERkEY = '?key=44446882-f589529ab68d1d31e6487214d';
 
+let Axios = axios.create({
+  baseURL: 'https://pixabay.com/api/',
+  headers: {},
+  params: {
+    key: '44446882-f589529ab68d1d31e6487214d',
+    orientation: 'horizontal',
+    safesearch: 'true',
+    image_type: 'photo',
+  },
+});
 export async function getAllBooks(q, page = '1', pages = 15) {
-  // const par = {
-  //   q: q,
-  //   page: page,
-  //   per_page: pages,
-  // };
-  let axios = Axios.create({
-    baseURL: 'https://pixabay.com/api/',
-    headers: {},
-    params: {
-      key: '44446882-f589529ab68d1d31e6487214d',
-      q: q,
-      page: page,
-      per_page: pages,
-    },
-  });
+  const par = {
+    q: q,
+    page: page,
+    per_page: pages,
+  };
+
   // const res = await axios.get('');
   try {
-    const res = await axios.get('');
+    const res = await Axios.get('', { params: par });
     return res.data;
   } catch (err) {
     console.log(err);

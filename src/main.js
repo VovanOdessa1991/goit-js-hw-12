@@ -28,16 +28,17 @@ let gallery = new SimpleLightbox('.galery__list a');
 
 // ! Поиск Картинок в перший раз
 async function seartchIMG(e) {
+  pages = 1;
   e.preventDefault();
   nameIMG = e.target.name.value.trim();
 
   // !якщо пустий рядок
   if (nameIMG === '') {
     clearCiild(refs.galery);
-    refs.nextImg.classList.add('hidden');
     iziToast.info({
       title: 'Пустой РЯДОК!!',
     });
+    refs.nextImg.classList.add('hidden');
     return;
   }
 
@@ -56,13 +57,11 @@ async function seartchIMG(e) {
       clearCiild(refs.galery);
       nameIMG = '';
       totalHits = 0;
-      // !!! Костіль почему-то моя функция тут не работает О_о  ---- 147  buttonNeedVisible()
-      // уже нет времени разбираться О_о
+
       refs.nextImg.classList.add('hidden');
 
       return;
     }
-    pages++;
 
     clearCiild(refs.galery);
 
@@ -84,14 +83,10 @@ async function nextImg() {
   try {
     // !  Проверка можно ли добавлять картинки
     if (totalHits <= refs.galery.childNodes.length + numberADDImg) {
-      iziToast.error({
-        title: 'Error',
-        message: 'УСЕ!',
-      });
-
       const add = totalHits - refs.galery.childNodes.length;
       // !Єто если уже совсем нельзя
-      if (add <= 0) {
+      if (add <= 2) {
+        refs.nextImg.classList.remove('hidden');
         iziToast.error({
           title: 'Error',
           message: 'STOP!',
@@ -101,8 +96,13 @@ async function nextImg() {
 
         return;
       }
+      iziToast.error({
+        title: 'Error',
+        message: 'Последняя запись!',
+      });
 
-      const name = await getAllBooks(nameIMG, pages++, add);
+      pages += 1;
+      const name = await getAllBooks(nameIMG, pages, add);
       render(name.hits);
       gallery.refresh();
       scrollEl();
@@ -111,28 +111,12 @@ async function nextImg() {
 
       return;
     }
-
-    const name = await getAllBooks(nameIMG, pages++, numberADDImg);
+    pages += 1;
+    const name = await getAllBooks(nameIMG, pages, numberADDImg);
     render(name.hits);
     gallery.refresh();
     scrollEl();
 
-    // // ! Чомусь не скролить
-
-    // console.log('ЧоМУЖ не скролиить?');
-    // scrollEl();
-
-    // ! Це вже паніка...
-    // window.scrollBy({
-    //   top: 100,
-    //   left: 100,
-    //   behavior: 'smooth',
-    // });
-    // scrollBy(3000, 0);
-
-    //! обновление галереи
-    // gallery.refresh();
-    // scrollEl();
     buttonNeedVisible();
   } catch (err) {
     console.log(err);
@@ -166,9 +150,20 @@ function hideLoader() {
   // console.log(' Тут скролить... ');
   // scrollEl();
 }
+// function buttonNeedVisible() {
+//   if (totalHits <= refs.galery.childNodes.length + numberADDImg) {
+//     // const add = totalHits - refs.galery.childNodes.length;
+//     if (add <= 2) {
+//       refs.nextImg.classList.add('hidden');
+//     }else refs.nextImg.classList.remove('hidden');
+//   } else refs.nextImg.classList.remove('hidden');
+//   // if (totalHits === refs.galery.childNodes.length) {
+//   //   refs.nextImg.classList.add('hidden');
+//   // } else refs.nextImg.classList.remove('hidden');
+// }
 
 function buttonNeedVisible() {
-  if (totalHits === refs.galery.childNodes.length) {
+  if (totalHits <= refs.galery.childNodes.length + 2) {
     refs.nextImg.classList.add('hidden');
   } else refs.nextImg.classList.remove('hidden');
 }
@@ -183,7 +178,6 @@ async function scrollEl() {
   }
   let ppp = refs.galery.children[0];
 
-  //! dblft 480
   const cildHeight = ppp.getBoundingClientRect().height * 2;
 
   window.scrollBy({
